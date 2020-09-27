@@ -95,19 +95,19 @@ $(document).ready(function() {
         // today temp
         var temperature = $("<p>",{
           "class": "card-text",
-          text: `Temperature: ${response.main.temp}`
+          text: `Temperature: ${response.main.temp}°F`
         })
 
         // today humidity
         var humidity = $("<p>",{
           "class": "card-text",
-          text: `Humidity: ${response.main.humidity}`
+          text: `Humidity: ${response.main.humidity}%`
         })
 
         // today wind speed
         var windSpeed = $("<p>",{
           "class": "card-text",
-          text: `Wind Speed: ${response.wind.speed}`
+          text: `Wind Speed: ${response.wind.speed} MPH`
         })
         
         cityText.append(mainImg);
@@ -167,13 +167,13 @@ $(document).ready(function() {
           // forecast temp
           var forecastTemperature = $("<p>",{
             "class": "card-text",
-            text: `Temp: ${response.list[i].main.temp}`
+            text: `Temp: ${response.list[i].main.temp}°F`
           })
 
           // forecast humidity
           var forecastHumidity = $("<p>",{
             "class": "card-text",
-            text: `Humidity: ${response.list[i].main.humidity}`
+            text: `Humidity: ${response.list[i].main.humidity}%`
           })
           
           forecastCardBody.append(forecastDate, forecastImg, forecastTemperature, forecastHumidity);
