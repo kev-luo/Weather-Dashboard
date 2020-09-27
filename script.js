@@ -2,10 +2,27 @@ $(document).ready(function() {
 
   // triggers api call when search button is clickced
   $("#search-button").on("click", function() {
-    var city = $("#search-value").val().trim();
-    $("#search-value").val('');
-    getWeather(city);
+    if ($("#search-value").val() !== '') {
+      var city = $("#search-value").val().trim();
+      $("#search-value").val('');
+      getWeather(city);
+    }
   });
+
+  // triggers api call when user presses enter while typing
+  $("#search-value").on("keypress", function(event) {
+    if (event.keyCode == '13' && $("#search-value").val() !== '') {
+      var city = $("#search-value").val().trim();
+      $("#search-value").val('');
+      getWeather(city);
+    }
+  });
+
+  // clear local storage
+  $("#clear-history").on("click", function() {
+    localStorage.clear();
+    $(".history").empty();
+  })
 
   // creates historical searches row
   function createRow(histSearch) {
