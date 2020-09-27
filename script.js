@@ -12,13 +12,19 @@ $(document).ready(function() {
     $(".history").empty();
 
     for (var i=0; i<histSearch.length; i++) {
-      var newLi = $("<li>", {
-        "class":"list-group-item"
+      var newLi = $("<button>", {
+        "class":"list-group-item list-group-item-action"
       });
       newLi.text(histSearch[i]);
       $(".history").append(newLi);
     }
   }
+
+  // enable display updates through historical searches list
+  $(".history").on("click", "button", function(event) {
+    event.preventDefault();
+    getWeather($(this).text());
+  })
 
 
   // temp F, humidity, wind speed mph, uv index
@@ -39,8 +45,10 @@ $(document).ready(function() {
           cityHist.push(response.name);
         }
         
+        // set value of "history" key in local storage equal to updated historical searches array
         localStorage.setItem("history",JSON.stringify(cityHist));
 
+        // updates list of historical searches
         createRow(cityHist);
 
         var mainCard = $("<div>",{
@@ -109,7 +117,7 @@ $(document).ready(function() {
 
       for (var i=0; i<response.list.length; i++) {
         if(response.list[i].dt_txt.indexOf("15:00:00") !== -1) {
-          console.log(response.list[i]);
+
           var col = $("<div>", {
             "class": "col-md-2"
           })
@@ -190,16 +198,17 @@ $(document).ready(function() {
 
     })
   }  
-        
 
+  // upon page load, get values for "history" key from local storage, assign to cityHist variable
   var cityHist = JSON.parse(localStorage.getItem("history")) || [];
 
+  // if there are historical searches, set the current display to be equal to the most recent search
   if (cityHist.length>0) {
     getWeather(cityHist[cityHist.length-1]);
   }
 
+  // update historical searches rows
   createRow(cityHist);
-
 
 });
 
