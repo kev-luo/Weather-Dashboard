@@ -102,6 +102,12 @@ $(document).ready(function() {
           text: `Temperature: ${response.main.temp}°F`
         })
 
+        // temp range
+        var tempRange = $("<p>",{
+          "class": "card-text",
+          text: `Range: ${response.main.temp_min}°F - ${response.main.temp_max}°F`
+        })
+
         // today humidity
         var humidity = $("<p>",{
           "class": "card-text",
@@ -113,13 +119,25 @@ $(document).ready(function() {
           "class": "card-text",
           text: `Wind Speed: ${response.wind.speed} MPH`
         })
+
+        // today sunrise
+        var windSpeed = $("<p>",{
+          "class": "card-text",
+          text: `Wind Speed: ${response.wind.speed} MPH`
+        })
+
+        // today sunset
+        var windSpeed = $("<p>",{
+          "class": "card-text",
+          text: `Wind Speed: ${response.wind.speed} MPH`
+        })
         
         cityText.append(mainImg);
-        cardBody.append(cityText, temperature, humidity, windSpeed);
+        cardBody.append(cityText, temperature, tempRange, humidity, windSpeed);
         mainCard.append(cardBody);
         mainCol.append(mainCard);
         $("#today").append(mainCol);
-
+        console.log(response);
         // call UVdata
         getUV(response.coord.lat,response.coord.lon);
 
@@ -240,11 +258,13 @@ $(document).ready(function() {
       console.log(response);
       var timeArray = [];
       var tempArray = [];
+      var feelsLikeArray = [];
       for (var i=0; i<12; i++) {
         var unixDate = response.hourly[i].dt;
         var forecastDay = new Date(unixDate*1000);
         timeArray.push(nonMilitary(forecastDay))
         tempArray.push(response.hourly[i].temp);
+        feelsLikeArray.push(response.hourly[i].feels_like)
       }
       var graphCol = $("<div>", {
         "class": "col-md-8"
@@ -269,10 +289,15 @@ $(document).ready(function() {
           data: {
               labels: timeArray,
               datasets: [{
-                  label: 'Temp',
-                  // backgroundColor: 'rgb(255, 99, 132)',
+                  label: 'Actual Temp',
                   borderColor: 'rgb(255, 99, 132)',
-                  data: tempArray
+                  data: tempArray,
+                  fill: false
+              }, {
+                  label: 'Feels Like Temp',
+                  borderColor: 'rgb(61, 100, 251)',
+                  data: feelsLikeArray,
+                  fill: false
               }]
           },
       
@@ -280,7 +305,7 @@ $(document).ready(function() {
               responsive: true,
               title: {
                   display: true,
-                  text: 'Weather'
+                  text: '12-Hour Forecast'
               },
               tooltips: {
                   mode: 'index',
