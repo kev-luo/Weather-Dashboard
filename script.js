@@ -61,7 +61,7 @@ $(document).ready(function() {
         if (cityHist.indexOf(response.name) == -1) {
           cityHist.push(response.name);
         }
-        
+
         // set value of "history" key in local storage equal to updated historical searches array
         localStorage.setItem("history",JSON.stringify(cityHist));
 
@@ -120,6 +120,9 @@ $(document).ready(function() {
 
         // call forecast
         getForecast(city);
+
+        // call hourly
+        getHourly(response.coord.lat,response.coord.lon);
     })
   }
     
@@ -130,7 +133,7 @@ $(document).ready(function() {
     }).then(function(response) {
 
       $("#forecast").empty();
-      $("#forecast").addClass("row");
+      // $("#forecast").addClass("row");
 
       for (var i=0; i<response.list.length; i++) {
         if(response.list[i].dt_txt.indexOf("15:00:00") !== -1) {
@@ -222,6 +225,37 @@ $(document).ready(function() {
   // if there are historical searches, set the current display to be equal to the most recent search
   if (cityHist.length>0) {
     getWeather(cityHist[cityHist.length-1]);
+  }
+
+  function getHourly(latit, longi) {
+    $.ajax({
+      url: `https://api.openweathermap.org/data/2.5/onecall?lat=${latit}&lon=${longi}&exclude=current,mintely,daily,alerts&appid=ca0ab1a31e65e2e155aab80479e17dc2&units=imperial`,
+      method: "GET"
+    }).then(function(response) {
+      // console.log(response);
+      for (var i=0; i<12; i++) {
+        var unixDate = response.hourly[i].dt;
+        var forecastDay = new Date(unixDate*1000);
+        console.log(nonMilitary(forecastDay));
+      }
+    })
+  }
+
+  // return non-military time
+  function nonMilitary(date) {
+    var hours = date.getHours();
+    var convertedTime = (hours+24)%12;
+
+    if (hours > 12) {
+      return convertedTime.toString()+'pm';
+    } else if (hours < 12 && hours > 0) {
+      return convertedTime.toString()+'am';
+    } else if (hours === 0) {
+      return '12am';
+    } else {
+      return '12pm';
+    }
+      
   }
 
   // update historical searches rows
