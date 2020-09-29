@@ -105,7 +105,7 @@ $(document).ready(function() {
         // temp range
         var tempRange = $("<p>",{
           "class": "card-text",
-          text: `Range: ${response.main.temp_min}°F - ${response.main.temp_max}°F`
+          text: `Range: ${response.main.temp_min}° - ${response.main.temp_max}°F`
         })
 
         // today humidity
@@ -120,20 +120,23 @@ $(document).ready(function() {
           text: `Wind Speed: ${response.wind.speed} MPH`
         })
 
+        var sunRise = getRegTime(response.sys.sunrise);
+        var sunSet = getRegTime(response.sys.sunset);
+
         // today sunrise
-        var windSpeed = $("<p>",{
+        var sunRiseText = $("<p>",{
           "class": "card-text",
-          text: `Wind Speed: ${response.wind.speed} MPH`
+          text: `Sunrise: ${sunRise}am`
         })
 
         // today sunset
-        var windSpeed = $("<p>",{
+        var sunSetText = $("<p>",{
           "class": "card-text",
-          text: `Wind Speed: ${response.wind.speed} MPH`
+          text: `Sunset: ${sunSet}pm`
         })
         
         cityText.append(mainImg);
-        cardBody.append(cityText, temperature, tempRange, humidity, windSpeed);
+        cardBody.append(cityText, temperature, tempRange, humidity, windSpeed, sunRiseText, sunSetText);
         mainCard.append(cardBody);
         mainCol.append(mainCard);
         $("#today").append(mainCol);
@@ -250,6 +253,7 @@ $(document).ready(function() {
     getWeather(cityHist[cityHist.length-1]);
   }
 
+  // get hourly data for graph
   function getHourly(latit, longi) {
     $.ajax({
       url: `https://api.openweathermap.org/data/2.5/onecall?lat=${latit}&lon=${longi}&exclude=current,mintely,daily,alerts&appid=ca0ab1a31e65e2e155aab80479e17dc2&units=imperial`,
@@ -357,6 +361,14 @@ $(document).ready(function() {
       return '12pm';
     }
       
+  }
+
+  // return regular time from unix time
+  function getRegTime(unixTime) {
+    var day = new Date(unixTime * 1000);
+    var hours = (day.getHours() + 24)%12 || 12;
+    var minutes = day.getMinutes();
+    return (`${hours}:${minutes}`);
   }
 
   // update historical searches rows
