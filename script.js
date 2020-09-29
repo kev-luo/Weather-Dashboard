@@ -68,6 +68,10 @@ $(document).ready(function() {
         // updates list of historical searches
         createRow(cityHist);
 
+        var mainCol = $("<div>", {
+          "class": "col-md-4"
+        })
+
         var mainCard = $("<div>",{
           "class": "card",
         })
@@ -113,7 +117,8 @@ $(document).ready(function() {
         cityText.append(mainImg);
         cardBody.append(cityText, temperature, humidity, windSpeed);
         mainCard.append(cardBody);
-        $("#today").append(mainCard);
+        mainCol.append(mainCard);
+        $("#today").append(mainCol);
 
         // call UVdata
         getUV(response.coord.lat,response.coord.lon);
@@ -232,12 +237,83 @@ $(document).ready(function() {
       url: `https://api.openweathermap.org/data/2.5/onecall?lat=${latit}&lon=${longi}&exclude=current,mintely,daily,alerts&appid=ca0ab1a31e65e2e155aab80479e17dc2&units=imperial`,
       method: "GET"
     }).then(function(response) {
-      // console.log(response);
+      console.log(response);
+      var timeArray = [];
+      var tempArray = [];
       for (var i=0; i<12; i++) {
         var unixDate = response.hourly[i].dt;
         var forecastDay = new Date(unixDate*1000);
-        console.log(nonMilitary(forecastDay));
+        timeArray.push(nonMilitary(forecastDay))
+        tempArray.push(response.hourly[i].temp);
       }
+      var graphCol = $("<div>", {
+        "class": "col-md-8"
+      })
+
+      var graphCard = $("<div>",{
+        "class": "card"
+      })
+
+      var graphCardBody = $("<div>",{
+        "class": "card-body p-2"
+      });
+
+      var newCanv = $("<canvas>",{
+        id: "myChart"
+      })
+
+      var ctx = newCanv.get(0).getContext('2d');
+      var chart = new Chart(ctx, {
+          type: 'line',
+      
+          data: {
+              labels: timeArray,
+              datasets: [{
+                  label: 'Temp',
+                  // backgroundColor: 'rgb(255, 99, 132)',
+                  borderColor: 'rgb(255, 99, 132)',
+                  data: tempArray
+              }]
+          },
+      
+          options: {
+              responsive: true,
+              title: {
+                  display: true,
+                  text: 'Weather'
+              },
+              tooltips: {
+                  mode: 'index',
+                  intersect: 'true'
+              },
+              hover: {
+                  mode: 'nearest',
+                  intersect: true
+              },
+              scales: {
+                  xAxes: [{
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: 'Month'
+                      }
+                  }],
+                  yAxes: [{
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: '°F'
+                      }
+                  }]
+              }
+          }
+      });
+
+      graphCardBody.append(newCanv);
+      graphCard.append(graphCardBody);
+      graphCol.append(graphCard);
+      $("#today").append(graphCol);
+
     })
   }
 
