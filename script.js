@@ -151,7 +151,8 @@ $(document).ready(function() {
         getHourly(response.coord.lat,response.coord.lon);
     })
   }
-    
+  
+  // function to get 5 day forecast
   function getForecast(city) {
     $.ajax({
       url: `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=ca0ab1a31e65e2e155aab80479e17dc2&units=imperial`,
@@ -263,6 +264,8 @@ $(document).ready(function() {
       var timeArray = [];
       var tempArray = [];
       var feelsLikeArray = [];
+
+      // for loop to add data to arrays that will be used for line charts
       for (var i=0; i<12; i++) {
         var unixDate = response.hourly[i].dt;
         var forecastDay = new Date(unixDate*1000);
@@ -286,6 +289,7 @@ $(document).ready(function() {
         id: "myChart"
       })
 
+      // create line chart with actual temperature and feels like temperature
       var ctx = newCanv.get(0).getContext('2d');
       var chart = new Chart(ctx, {
           type: 'line',
